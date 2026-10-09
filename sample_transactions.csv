@@ -1,0 +1,4 @@
+﻿date,amount,category,merchant,description,payment_method,payment_channel
+2026-10-08,120,Food,Campus Canteen,Lunch,UPI,online
+2026-10-08,80,Transport,City Bus,Bus fare,Cash,offline
+2026-10-09,250,Books,College Bookshop,Notebook,UPI,online

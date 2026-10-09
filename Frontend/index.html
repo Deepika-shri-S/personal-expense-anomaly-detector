@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SpendSentry</title>
+<script>try{if(localStorage.getItem('spendsentry.theme')==='dark')document.documentElement.classList.add('dark')}catch(e){}</script>
+<style>
+:root{color-scheme:light;--bg:#F3ECD9;--bg2:#E9E5CC;--card:#FFFDF6;--bd:#DCE3D0;--tx:#3a2e26;--mu:#8a7b6e;--g:#3D5538;--g2:#e6eddf;--br:#6E4A35;--rust:#C85A32;--rust2:#f8e3da;--am:#D99B26;--am2:#faedd0;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+h1,h2,h3,.serif{font-family:Georgia,"Times New Roman",serif;font-weight:600;margin:0}
+svg.i{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-3px}
+header{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:3px solid var(--g);background:var(--bg2)}
+.brand{display:flex;gap:8px;align-items:center;color:var(--g);font-size:22px}.brand span{color:var(--br)}
+.tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.seg{display:flex;border:1px solid var(--bd);border-radius:8px;overflow:hidden;background:var(--card)}
+.seg button{border:0;background:none;padding:7px 10px;font:inherit;font-size:13px;color:var(--mu);cursor:pointer}
+.seg button.on{background:var(--g);color:#fff}
+.btn{border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:8px;padding:8px 12px;font:inherit;font-size:14px;cursor:pointer}
+.btn.p{background:var(--g);border-color:var(--g);color:#fff;font-weight:600}.btn.p:hover{opacity:.9}
+main{max-width:1180px;margin:0 auto;padding:18px 16px 90px}
+.grid{display:grid;gap:14px}.k{grid-template-columns:repeat(2,1fr)}
+@media(min-width:900px){.k{grid-template-columns:repeat(4,1fr)}.two{grid-template-columns:1.25fr 1fr}}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:16px;min-width:0}
+.card h2{font-size:17px;margin-bottom:10px;color:var(--g)}
+.kl{font-size:12px;color:var(--mu);text-transform:uppercase;letter-spacing:.06em}.kv{font:600 26px Georgia,serif;margin-top:4px;color:var(--g)}
+.sub{font-size:12px;color:var(--mu)}
+.chip{display:inline-block;font-size:12px;padding:2px 9px;border-radius:99px;background:var(--g2);color:var(--g);border:1px solid var(--bd)}
+.chip.h{background:var(--rust2);color:var(--rust);border-color:var(--rust)}.chip.m{background:var(--am2);color:var(--am);border-color:var(--am)}.chip.ok{background:var(--g2);color:var(--g);border-color:var(--g)}
+.al{border-left:4px solid var(--am);background:var(--card);border:1px solid var(--bd);border-left-width:4px;border-radius:10px;padding:12px;margin-bottom:10px}
+.al.high{border-left-color:var(--rust)}.al.low{opacity:.7}
+.top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;flex-wrap:wrap}
+.why{background:var(--bg2);border-radius:8px;padding:8px 10px 8px 12px;margin:8px 0;font-size:13px}
+.why b{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--br)}.why ul{margin:4px 0 0;padding-left:18px}
+.acts{display:flex;flex-wrap:wrap;gap:6px}.acts .btn{font-size:12px;padding:5px 9px}
+.leak{padding:8px 10px;border-radius:8px;background:var(--am2);font-size:13px;margin-bottom:8px}
+.bar{margin:9px 0}.bar .r{height:9px;border-radius:5px;background:var(--bg2);position:relative;margin-top:3px}.bar .r i{display:block;height:100%;border-radius:5px}
+.bar .r u{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--br)}
+.sc{width:100%;height:auto;display:block}.sc text{fill:var(--mu);font-size:10px}.sc circle{transition:r .12s}.sc circle:hover{r:10}
+input,select{font:inherit;color:var(--tx);background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:8px 10px;width:100%}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:14px;min-width:560px}th{text-align:left;font-size:12px;color:var(--mu);text-transform:uppercase;letter-spacing:.05em;padding:8px;border-bottom:1px solid var(--bd)}
+td{padding:9px 8px;border-bottom:1px solid var(--bd)}td.n,th.n{text-align:right}tr.fl td{background:var(--rust2)}
+.fab{display:none;position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom,0px));width:56px;height:56px;border-radius:50%;border:0;background:var(--g);color:#fff;box-shadow:0 6px 18px #0004;cursor:pointer;z-index:5}
+.fab svg{width:24px;height:24px}@media(max-width:640px){.fab{display:block}.hide-m{display:none}}
+#modal{position:fixed;inset:0;background:#0007;display:none;align-items:center;justify-content:center;padding:16px;z-index:20}
+#modal.on{display:flex}.mb{background:var(--card);border-radius:14px;padding:20px;width:100%;max-width:420px;border:1px solid var(--bd)}
+.mb label{display:block;font-size:12px;color:var(--mu);margin:12px 0 4px;text-transform:uppercase;letter-spacing:.05em}
+#toast{position:fixed;left:50%;transform:translateX(-50%);top:calc(14px + env(safe-area-inset-top,0px));z-index:30;display:flex;flex-direction:column;gap:8px;width:min(92vw,420px)}
+.t{background:var(--rust);color:#fff;padding:10px 14px;border-radius:10px;font-size:14px;box-shadow:0 6px 18px #0004}.t.g{background:var(--g);color:#fff}
+.empty{color:var(--mu);font-size:14px;padding:14px 0;text-align:center}
+body{background:radial-gradient(900px 420px at 85% -10%,#dbe6c8 0,transparent 70%),var(--bg);background-attachment:fixed}
+header{background:linear-gradient(135deg,#3D5538,#2b3f28);border-bottom:0;box-shadow:0 4px 16px #3d553833}header .brand{color:#F7F2E4}header .brand span{color:#E9C9A6}header .chip{background:#ffffff22;color:#F7F2E4;border-color:#ffffff44}
+.card{transition:transform .18s,box-shadow .18s}.card:hover{box-shadow:0 8px 22px #3d553818}
+.kc{cursor:pointer;position:relative;overflow:hidden;padding-left:20px}.kc:hover{transform:translateY(-3px)}.kc:before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--g)}.kc.a:before{background:var(--rust)}.kc.b:before{background:var(--am)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:14px}
+.tile{border:1px solid var(--bd);background:var(--card);border-radius:12px;padding:12px;cursor:pointer;text-align:left;font:inherit;color:inherit;transition:.18s}.tile:hover{transform:translateY(-3px);border-color:var(--g);box-shadow:0 8px 20px #3d553822}.tile.on{background:var(--g);color:#fff;border-color:var(--g)}.tile.on .sub{color:#e5ecd9}.tile b{display:block;font:600 19px Georgia,serif;margin:2px 0}
+.al{transition:transform .15s}.al:hover{transform:translateX(3px)}
+@keyframes up{from{opacity:0;transform:translateY(8px)}}.card,.tile{animation:up .4s both}
+/* Dark theme: only active when <html class="dark"> */
+html.dark{color-scheme:dark;--bg:#16201a;--bg2:#1d2a21;--card:#1f2c23;--bd:#31423a;--tx:#ece6d6;--mu:#9fb0a2;--g:#8fc47f;--g2:#2a3d2c;--br:#d4a97f;--rust:#d98f77;--rust2:#332a28;--am:#d9b26a;--am2:#352f22}
+html.dark body{background:radial-gradient(900px 420px at 85% -10%,#26402c 0,transparent 70%),var(--bg);background-attachment:fixed}
+html.dark header{background:linear-gradient(135deg,#27402b,#1b2d1f)}
+html.dark .btn.p,html.dark .fab,html.dark .seg button.on,html.dark .tile.on{color:#10200f}html.dark .tile.on .sub{color:#2b4a2a}
+html.dark .t,html.dark .t.g{color:#10200f}html.dark .t{background:var(--rust)}html.dark .t.g{background:var(--g)}
+html.dark .chip.h,html.dark .chip.m{border-color:transparent}html.dark input::placeholder{color:var(--mu)}
+html.dark .card:hover{box-shadow:0 8px 22px #0006}html.dark .tile:hover{box-shadow:0 8px 20px #0006}
+</style></head><body>
+<header>
+ <div class="brand serif"><svg class="i" style="width:26px;height:26px" viewBox="0 0 24 24" id="logo"></svg>Spend<span>Sentry</span></div>
+ <div class="tools">
+  <div class="seg" id="sens"></div>
+  <button class="btn" id="theme" aria-label="Toggle light/dark mode">🌙</button>
+  <button class="btn" id="demo"></button>
+  <label class="btn">Import CSV<input type="file" id="csv" accept=".csv,text/csv" hidden></label>
+  <button class="btn" id="clr">Clear data</button>
+  <button class="btn p" id="add1"></button><span class="chip" id="usr"></span>
+ </div>
+</header>
+<main>
+ <div class="grid k" id="kpis"></div>
+ <div class="tiles" id="tiles"></div>
+ <div class="card" style="margin-top:14px"><div class="top"><h2>Spending overview</h2><div class="seg" id="per"></div></div><div id="ov"></div></div>
+ <div class="grid two" style="margin-top:14px">
+  <div class="card"><h2>Anomaly feed</h2><div class="sub" style="margin:-6px 0 8px">Showing the last 30 days. Older flags stay in the table below.</div><div id="feed"></div></div>
+  <div class="grid" style="align-content:start">
+   <div class="card"><h2>What it has learned</h2><div id="learn"></div></div>
+   <div class="card"><h2>Spend prediction</h2><div id="pred"></div></div>
+   <div class="card"><h2>Regular spending</h2><div class="sub" style="margin-bottom:6px">Habits we expect, so they don't set off duplicate alarms. Merchants you pay on 3+ different days appear here automatically.</div><div id="reg"></div></div>
+   <div class="card"><h2>Category: current vs month-end</h2><div id="bars"></div></div>
+  </div>
+ </div>
+ <div class="card" style="margin-top:14px"><h2>Timeline · amount vs time (last 45 days)</h2><div id="scatter"></div>
+  <div class="sub" style="margin-top:6px"><span style="color:var(--g)">●</span> normal &nbsp; <span style="color:var(--am)">◯</span> moderate &nbsp; <span style="color:var(--rust)">◯</span> high severity · vertical scale is compressed so small spends stay visible</div></div>
+ <div class="card" style="margin-top:14px"><h2>All transactions</h2>
+  <div class="grid" style="grid-template-columns:2fr 1fr;margin-bottom:10px"><input id="q" placeholder="Search merchant or category"><select id="f"></select></div>
+  <div class="tw"><table><thead><tr><th>Date</th><th>Merchant</th><th class="hide-m">Category</th><th class="n">Amount</th><th>Status</th></tr></thead><tbody id="tb"></tbody></table></div>
+  <div class="sub" id="tbnote" style="margin-top:8px"></div></div>
+</main>
+<button class="fab" id="add2" aria-label="Add expense"></button>
+<div id="modal"><div class="mb"><h2 style="color:var(--g)">Add expense</h2>
+ <label>Amount (₹)</label><input id="ma" type="number" min="1" placeholder="0">
+ <label>Description / merchant</label><input id="md" placeholder="e.g. Starbucks coffee">
+ <div style="margin-top:6px" class="sub">Category: <span class="chip" id="mc">General Outflow</span></div>
+ <label>Date &amp; time</label><input id="mt" type="datetime-local">
+ <div class="acts" style="margin-top:16px;justify-content:flex-end"><button class="btn" id="mx">Cancel</button><button class="btn p" id="ms">Save expense</button></div></div></div>
+<div id="toast"></div>
+<script>
+const P={plus:"M5 12h14M12 5v14",alert:"m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3M12 9v4M12 17h.01",check:"M20 6 9 17l-5-5",trend:"m22 7-8.5 8.5-5-5L2 17M16 7h6v6",repeat:"m17 2 4 4-4 4M3 11v-1a4 4 0 0 1 4-4h14M7 22l-4-4 4-4M21 13v1a4 4 0 0 1-4 4H3",shield:"M20 13c0 5-3.5 7.5-7.7 8.97a1 1 0 0 1-.6 0C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.5 3.8 17 5 19 5a1 1 0 0 1 1 1z",spark:"M9.9 14.1 9 17l-.9-2.9L5 13l3.1-1L9 9l.9 3L13 13zM19 3v4M21 5h-4",flag:"M4 22V4M4 4h13l-2 4 2 4H4"};
+const ic=n=>`<svg class="i" viewBox="0 0 24 24"><path d="${P[n]}"/></svg>`;
+const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt=n=>Math.round(n).toLocaleString('en-IN'),R=n=>'₹'+fmt(n);
+const CATS=['Food & Dining','Transit','Subscriptions','Shopping','General Outflow'];
+const RULES=[[/coffee|swiggy|zomato|restaurant|dining|cafe/i,0],[/uber|\bola\b|metro|fuel|travel|\bbus\b|\btrain\b|\bauto\b|\bcab\b|taxi/i,1],[/netflix|spotify|prime/i,2],[/amazon|myntra|store/i,3]];
+const cat=d=>CATS[(RULES.find(([r])=>r.test(d))||[0,4])[1]];
+/* COLD-START priors only. Once the system has seen enough of YOUR history, these are replaced by learned norms. */
+const BASE0={'Food & Dining':850,'Transit':400,'Subscriptions':500,'Shopping':2000,'General Outflow':1000};
+/* Fallback monthly budgets, used until at least one full past month of history exists. */
+const BUD={'Food & Dining':14000,'Transit':5000,'Subscriptions':2500,'Shopping':20000,'General Outflow':6000};
+const TH={Conservative:4,Balanced:3,Strict:2};
+const D=864e5,WIN=60*D,HL=21*D,PRIOR_N=5; /* learn from last 60 days; recent weeks count more (21-day half-life); need 5 samples to trust history over the prior */
+const S={tx:[],dis:new Set(),conf:new Set(),reg:new Set(),no:new Set(),boost:new Set(),regs:{},sens:'Balanced',id:1,learn:null};
+const now0=new Date(),mStart=new Date(now0.getFullYear(),now0.getMonth(),1).getTime(),dim=new Date(now0.getFullYear(),now0.getMonth()+1,0).getDate();
+const tm=ts=>new Date(ts).toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit'});
+const dt=ts=>new Date(ts).toLocaleDateString('en-IN',{day:'numeric',month:'short'});
+
+/* ---------- theme (light/dark), remembered in localStorage ---------- */
+const TKEY='spendsentry.theme';
+function setTheme(dark){document.documentElement.classList.toggle('dark',dark);$('#theme').textContent=dark?'☀️':'🌙';try{localStorage.setItem(TKEY,dark?'dark':'light')}catch(e){}}
+
+/* ---------- persistence: history survives a refresh ---------- */
+const KEY='spendsentry.v2';
+function save(){try{localStorage.setItem(KEY,JSON.stringify({tx:S.tx.map(({id,desc,amt,ts,cat})=>({id,desc,amt,ts,cat})),dis:[...S.dis],conf:[...S.conf],reg:[...S.reg],no:[...S.no],boost:[...S.boost],sens:S.sens,id:S.id,user:S.user||null}))}catch(e){/* too big for localStorage (e.g. huge CSV): drop the stale copy so a refresh never shows old data */try{localStorage.removeItem(KEY)}catch(_){}}}
+function load(){try{const j=JSON.parse(localStorage.getItem(KEY)||'null');if(!j)return;S.tx=j.tx||[];S.dis=new Set(j.dis);S.conf=new Set(j.conf);S.reg=new Set(j.reg);S.no=new Set(j.no);S.boost=new Set(j.boost);S.sens=TH[j.sens]?j.sens:'Balanced';S.id=j.id||S.tx.length+1;S.user=j.user||null}catch(e){}}
+
+/* ---------- learning from history ---------- */
+/* weighted median: recent and user-approved samples count more */
+function wmed(a){if(!a.length)return 0;a=[...a].sort((p,q)=>p[0]-q[0]);const T=a.reduce((s,v)=>s+v[1],0);let c=0;for(const [v,w] of a){c+=w;if(c>=T/2)return v}return a[a.length-1][0]}
+/* learn a category's "normal" at time ts using only what happened BEFORE ts (walk-forward, so no peeking).
+   Returns typical amount m, spread sp (robust, MAD-based) and sample count n.
+   Scans backwards from the newest sample and stops at the 60-day edge or 200 samples, so cost per call is bounded (O(1) w.r.t. dataset size). */
+function learn(h,ts,prior){
+ const w=[];for(let i=h.length-1;i>=0&&w.length<200;i--){const p=h[i];if(p.ts>ts)continue;if(ts-p.ts>WIN)break;w.push(p)}
+ if(!w.length)return{m:prior,sp:prior*.5,n:0};
+ const ws=w.map(p=>[p.v,Math.pow(.5,(ts-p.ts)/HL)*p.k]),m0=wmed(ws),mad=Math.max(wmed(ws.map(([v,x])=>[Math.abs(v-m0),x]))*1.4826,m0*.25);
+ const a=Math.min(1,w.length/PRIOR_N); /* blend with the starting estimate until enough samples exist */
+ return{m:m0*a+prior*(1-a),sp:mad*a+prior*.5*(1-a),n:w.length};
+}
+
+function analyze(){
+ const t=TH[S.sens],s=[...S.tx].sort((a,b)=>a.ts-b.ts);const g={};s.forEach(x=>{const k=x.desc.toLowerCase();(g[k]=g[k]||[]).push(x)});S.regs={};Object.entries(g).forEach(([k,a])=>{const dy=new Set(a.map(v=>new Date(v.ts).toDateString())).size,m=a.map(v=>v.amt).sort((p,q)=>p-q)[a.length>>1];if(!S.no.has(k)&&(S.reg.has(k)||(a.length>=3&&dy>=3)))S.regs[k]={n:a[0].desc,c:a.length,m,cat:a[0].cat,man:S.reg.has(k)}});
+ /* lastSeen: merchant -> its last 3 {amt,ts} (O(1) duplicate lookup). sq/sh: sliding queue of recent small-charge timestamps (O(1) amortised burst check). hn/nn: running counts for the night-share check. */
+ const hist={},seen=new Set(),lastSeen=new Map(),sq=[];let sh=0,hn=0,nn=0;CATS.forEach(c=>hist[c]=[]);
+ s.forEach((x,i)=>{
+  const r=[];let sc=0;const key=x.desc.toLowerCase(),rg=S.regs[key],hab=rg&&rg.c>=3;
+  const L=learn(hist[x.cat],x.ts,BASE0[x.cat]),b=hab?rg.m:L.m,ra=x.amt/b,z=(x.amt-L.m)/L.sp;
+  /* 1. amount: must be both a big multiple of the learned norm AND well outside its usual spread */
+  if(ra>=t&&(hab||z>=t)){
+   const why=hab?'usual '+x.desc+' payment':'learned '+x.cat+' norm';
+   const det=hab?'':(L.n>=PRIOR_N?` (usual range ${R(Math.max(0,L.m-L.sp))}–${R(L.m+L.sp)}, learned from ${L.n} past purchases)`:' (still learning your habits, so using a starting estimate)');
+   r.push(`Amount is ${ra.toFixed(1)}x above your ${why} of ${R(b)}${det}`);sc+=ra>=t*2?3:2;
+  }else if(i>=20&&!seen.has(key)&&ra>=2){
+   /* 2. merchant: first time seen, and already pricey for the category */
+   r.push(`First payment to ${x.desc}, and ${ra.toFixed(1)}x your usual ${x.cat} amount`);sc+=1;
+  }
+  /* 3. timing: night spending is only unusual if YOUR history says so */
+  const hr=new Date(x.ts).getHours(),nightShare=hn>=20?nn/hn:0;
+  if(hr<5&&nightShare<.1){r.push(hn>=20?`Off-hours transaction at ${tm(x.ts)}; only ${Math.round(nightShare*100)}% of your past spending happens between 12am and 5am`:`Off-hours transaction at ${tm(x.ts)}`);sc+=2}
+  /* 4. duplicates: O(1) lookup of this merchant's last 3 charges */
+  const win=x.cat==='Subscriptions'&&!rg?3*D:36e5,ls=lastSeen.get(key)||[];
+  const dp=ls.find(p=>p.amt===x.amt&&x.ts-p.ts<win);
+  if(dp){r.push(`Duplicate charge: same merchant and amount already billed on ${dt(dp.ts)} at ${tm(dp.ts)}`);sc+=3}
+  ls.push({amt:x.amt,ts:x.ts});if(ls.length>3)ls.shift();lastSeen.set(key,ls);
+  /* 5. frequency burst: sliding queue, expire entries older than 30 min from the front */
+  while(sh<sq.length&&x.ts-sq[sh]>=18e5)sh++;
+  if(x.amt<300&&sq.length-sh>=2){r.push('3 small charges within 30 minutes, a common card-testing pattern');sc+=2}
+  if(x.amt<300){sq.push(x.ts);if(sh>2048){sq.splice(0,sh);sh=0}}
+  x.r=r;x.sc=sc;x.flag=sc>0&&!S.dis.has(x.id);x.sev=sc>=3?'high':'med';x.ln=L.n;
+  /* learn from this transaction only if it looked normal or the user approved it.
+     "Shift baseline" counts it 3x. Flagged and confirmed leaks never pollute the norm. */
+  if(!x.sc||S.dis.has(x.id)){hist[x.cat].push({v:x.amt,ts:x.ts,k:S.boost.has(x.id)?3:1});hn++;if(hr<5)nn++}
+  seen.add(key);
+ });
+ const nw=Date.now();
+ S.learn={by:Object.fromEntries(CATS.map(c=>[c,{...learn(hist[c],nw,BASE0[c]),prior:BASE0[c]}])),night:hn?nn/hn:0,nh:hn,n:s.length,days:s.length?Math.max(1,Math.round((s[s.length-1].ts-s[0].ts)/D)):0};
+ return s.reverse();
+}
+function stats(A){
+ const el=Math.max(1,(Date.now()-mStart)/D),cur={},nor={},pr={},bg={...BUD};
+ CATS.forEach(c=>{cur[c]=0;nor[c]=0});
+ /* learned monthly norm: average of each full past month (anomalies excluded), +10% headroom.
+    Falls back to the fixed budget until a full month of history exists. */
+ let lb=false;
+ if(A.length){const first=A[A.length-1].ts,ms=[]; /* A is sorted newest-first, so the last item is the oldest */
+  for(let k=1;k<=6;k++){const a=new Date(now0.getFullYear(),now0.getMonth()-k,1).getTime(),e=new Date(now0.getFullYear(),now0.getMonth()-k+1,1).getTime();if(a>=first)ms.push([a,e])}
+  if(ms.length){lb=true;CATS.forEach(c=>{const v=ms.map(([a,e])=>A.filter(x=>x.cat===c&&x.ts>=a&&x.ts<e&&!x.flag).reduce((q,x)=>q+x.amt,0)),avg=v.reduce((p,q)=>p+q,0)/v.length;if(avg>0)bg[c]=Math.max(500,avg*1.1)})}}
+ A.forEach(x=>{if(x.ts>=mStart){cur[x.cat]+=x.amt;if(!x.sc)nor[x.cat]+=x.amt}});
+ let tot=0,proj=0,bud=0;
+ CATS.forEach(c=>{pr[c]=cur[c]+nor[c]/el*Math.max(0,dim-el);tot+=cur[c];proj+=pr[c];bud+=bg[c]});
+ const rc=Date.now()-30*D,open=A.filter(x=>x.flag&&!S.conf.has(x.id)&&x.ts>=rc).length,ratio=proj/bud;
+ const health=Math.max(0,Math.min(100,Math.round(100-Math.max(0,ratio-.5)*60-open*4)));
+ return{cur,pr,tot,proj,bud,bg,lb,open,health,el};
+}
+function toast(m,g){const e=document.createElement('div');e.className='t'+(g?' g':'');e.innerHTML=m.replace(/\u{1F6A8}\s?/gu,'');$('#toast').appendChild(e);setTimeout(()=>e.remove(),4200)}
+
+function render(){
+ const A=analyze(),st=stats(A);window.A=A;
+ const BL=st.lb?'norm':'budget';
+ const hl=st.health>=70?['Healthy','ok']:st.health>=40?['Watch','m']:['At risk','h'];
+ $('#kpis').innerHTML=[['Total spent',R(st.tot),'this month'],['Projected month-end',R(st.proj),`vs ${st.lb?'your usual month':'budget'} ${R(st.bud)}`],['Anomalies flagged',st.open,'awaiting review'],['Budget health',st.health+'/100',`<span class="chip ${hl[1]}">${hl[0]}</span>`]]
+  .map((k,i)=>`<div class="card kc ${['','','a','b'][i]}" data-go="${['tb','pred','feed','bars'][i]}"><div class="kl">${k[0]}</div><div class="kv">${k[1]}</div><div class="sub">${k[2]}</div></div>`).join('');
+ $('#sens').innerHTML=Object.keys(TH).map(k=>`<button class="${k===S.sens?'on':''}" data-s="${k}">${k}</button>`).join('');
+ const rc=Date.now()-30*D;
+ const fl=A.filter(x=>x.flag&&x.ts>=rc).sort((a,b)=>(S.conf.has(a.id)-S.conf.has(b.id))||(b.sc-a.sc)||(b.ts-a.ts));
+ $('#feed').innerHTML=fl.length?fl.map(x=>{const c=S.conf.has(x.id);return`<div class="al ${x.sev==='high'?'high':''} ${c?'low':''}"><div class="top"><div><b>${esc(x.desc)}</b> · ${R(x.amt)}<div class="sub">${dt(x.ts)}, ${tm(x.ts)} · ${x.cat}</div></div><span class="chip ${c?'':x.sev==='high'?'h':'m'}">${c?'Confirmed leak':x.sev==='high'?'Needs a look':'Worth a glance'}</span></div>
+ <div class="why"><b>${ic('spark')} Why flagged</b><ul>${x.r.map(r=>`<li>${esc(r)}</li>`).join('')}</ul></div>
+ ${c?'':`<div class="acts"><button class="btn" data-a="ok" data-id="${x.id}">${ic('check')} Legitimate purchase</button><button class="btn" data-a="base" data-id="${x.id}">${ic('trend')} Shift category baseline</button><button class="btn" data-a="reg" data-id="${x.id}">${ic('repeat')} Mark as regular</button><button class="btn" data-a="leak" data-id="${x.id}">${ic('flag')} Confirm leak</button></div>`}</div>`}).join(''):`<div class="empty">${ic('shield')} No open anomalies. ${S.tx.length?'Everything looks like you.':'Load the demo dataset or add an expense to begin.'}</div>`;
+ const leaks=CATS.map(c=>({c,p:st.pr[c]/st.bg[c]-1,o:st.pr[c]-st.bg[c]})).filter(x=>x.p>.15&&st.cur[x.c]>0).sort((a,b)=>b.o-a.o).slice(0,2);
+ const rec={};A.filter(x=>x.cat==='Subscriptions').forEach(x=>{const k=x.desc.toLowerCase();(rec[k]=rec[k]||[]).push(x)});
+ const up=Object.values(rec).map(g=>{g.sort((a,b)=>a.ts-b.ts);const l=g[g.length-1];let iv=30*D;if(g.length>1){const v=(l.ts-g[0].ts)/(g.length-1);if(v>5*D)iv=v}return{n:l.desc,a:l.amt,d:l.ts+iv}}).sort((a,b)=>a.d-b.d).slice(0,3);
+ $('#pred').innerHTML=st.tot?`<div class="kl">Projected month-end</div><div class="kv" style="margin-bottom:8px">${R(st.proj)}</div><div class="sub" style="margin-bottom:8px">Based on daily velocity of ${R(st.tot/st.el)}/day, with one-off anomalies excluded from the run-rate.</div>`+
+  (leaks.length?leaks.map(l=>`<div class="leak">⚠️ ${l.c} is pacing ${Math.round(l.p*100)}% above ${st.lb?'your learned monthly norm':'its historical average'}; predicted overspend of ${R(l.o)} by month-end.</div>`).join(''):`<div class="leak" style="background:var(--g2)">✅ No category is pacing above ${st.lb?'your learned monthly norm':'its historical average'}.</div>`)+
+  `<div class="kl" style="margin-top:10px">${ic('repeat')} Upcoming recurring outflows</div>`+(up.length?up.map(u=>`<div class="top" style="padding:5px 0;border-bottom:1px solid var(--bd)"><span>${esc(u.n)}</span><span class="sub">${dt(u.d)} · ${R(u.a)}</span></div>`).join(''):'<div class="sub">Not enough subscription history yet.</div>'):'<div class="empty">Add expenses to see forecasts.</div>';
+ const mx=Math.max(1,...CATS.map(c=>Math.max(st.cur[c],st.pr[c],st.bg[c])));
+ $('#bars').innerHTML=CATS.map(c=>`<div class="bar"><div class="top"><span>${c}</span><span class="sub">${R(st.cur[c])} → ${R(st.pr[c])} · ${BL} ${R(st.bg[c])}</span></div>
+  <div class="r"><i style="width:${st.cur[c]/mx*100}%;background:${st.cur[c]>st.bg[c]?'var(--rust)':'var(--g)'}"></i><u style="left:${st.bg[c]/mx*100}%"></u></div>
+  <div class="r" style="height:6px"><i style="width:${st.pr[c]/mx*100}%;background:var(--am);opacity:.7"></i></div></div>`).join('')+`<div class="sub">Green = spent so far · amber = projected month-end · line = ${st.lb?'your learned monthly norm (avg of past full months)':'budget'}</div>`;
+ scatter(A);table();regView();tilesView(st);ovView(A);learnView();$('#pred').innerHTML=$('#pred').innerHTML.replace(/\u26A0\uFE0F?\s?/g,'');
+ save();
+}
+/* ---------- Spending overview: Week / Month / Year graphs ---------- */
+function ovView(A){
+ const per=S.per||'Month',n=new Date(),y=n.getFullYear(),mo=n.getMonth(),dd=n.getDate(),bk=[];
+ $('#per').innerHTML=['Week','Month','Year'].map(k=>`<button class="${k===per?'on':''}" data-p="${k}">${k}</button>`).join('');
+ if(per==='Week')for(let i=6;i>=0;i--){const a=new Date(y,mo,dd-i);bk.push({a:a.getTime(),e:new Date(y,mo,dd-i+1).getTime(),l:a.toLocaleDateString('en-IN',{weekday:'short'}),tip:dt(a.getTime())})}
+ else if(per==='Month')for(let d=1;d<=dim;d++){const a=new Date(y,mo,d);bk.push({a:a.getTime(),e:new Date(y,mo,d+1).getTime(),l:d===1||d%5===0?String(d):'',tip:dt(a.getTime())})}
+ else for(let i=11;i>=0;i--){const a=new Date(y,mo-i,1);bk.push({a:a.getTime(),e:new Date(y,mo-i+1,1).getTime(),l:a.toLocaleDateString('en-IN',{month:'short'}),tip:a.toLocaleDateString('en-IN',{month:'long',year:'numeric'})})}
+ bk.forEach(b=>{b.t=0;b.f=0});
+ const from=bk[0].a,to=bk[bk.length-1].e,ct={};let tot=0,an=0;CATS.forEach(c=>ct[c]=0);
+ for(const x of A){ /* A is newest-first, so stop once we pass the start of the period */
+  if(x.ts<from)break;if(x.ts>=to)continue;
+  const b=bk.find(b=>x.ts>=b.a&&x.ts<b.e);if(!b)continue;
+  b.t+=x.amt;tot+=x.amt;ct[x.cat]+=x.amt;if(x.flag){b.f+=x.amt;an++}
+ }
+ const title=per==='Week'?'Last 7 days':per==='Month'?n.toLocaleDateString('en-IN',{month:'long',year:'numeric'}):'Last 12 months';
+ if(!tot){$('#ov').innerHTML=`<div class="sub">${title}</div><div class="empty">No spending in this period yet. Load the demo dataset, import a CSV or add an expense.</div>`;return}
+ const act=bk.filter(b=>b.t>0).length,avg=per==='Week'?tot/7:per==='Month'?tot/dd:tot/Math.max(1,act),unit=per==='Year'?'month':'day',top=CATS.reduce((p,c)=>ct[c]>ct[p]?c:p,CATS[0]);
+ const W=640,H=220,l=46,r=8,t=10,bm=24,ph=H-t-bm,mx=Math.max(...bk.map(b=>b.t)),bw=(W-l-r)/bk.length;
+ const yl=v=>v>=100000?(v/100000).toFixed(1).replace('.0','')+'L':v>=1000?(v/1000).toFixed(v>=10000?0:1).replace('.0','')+'k':String(Math.round(v));
+ let g='';
+ for(let i=0;i<=4;i++){const v=mx*i/4,yy=t+ph-v/mx*ph;g+=`<line x1="${l}" x2="${W-r}" y1="${yy}" y2="${yy}" stroke="var(--bd)"/><text x="${l-6}" y="${yy+3}" text-anchor="end">${yl(v)}</text>`}
+ bk.forEach((b,i)=>{
+  const x0=l+i*bw+bw*.16,w=bw*.68,hn=(b.t-b.f)/mx*ph,hf=b.f/mx*ph,tip=`<title>${b.tip}: ${R(b.t)}${b.f?` (${R(b.f)} flagged)`:''}</title>`;
+  if(b.t>0)g+=`<g>${tip}<rect x="${x0}" y="${t+ph-hn}" width="${w}" height="${Math.max(hn,0)}" rx="2" fill="var(--g)" opacity=".8"/>${hf>0?`<rect x="${x0}" y="${t+ph-hn-hf}" width="${w}" height="${hf}" rx="2" fill="var(--rust)"/>`:''}</g>`;
+  if(b.l)g+=`<text x="${x0+w/2}" y="${H-6}" text-anchor="middle">${b.l}</text>`;
+ });
+ const cats=CATS.map(c=>[c,ct[c]]).sort((a,b)=>b[1]-a[1]).map(([c,v])=>{const p=Math.round(v/tot*100);return`<div class="bar"><div class="top"><span>${c}</span><span class="sub">${R(v)} · ${p}%</span></div><div class="r"><i style="width:${p}%;background:var(--g)"></i></div></div>`}).join('');
+ $('#ov').innerHTML=`<div class="sub" style="margin-bottom:8px"><b>${title}</b> · ${R(tot)} spent · avg ${R(avg)}/${unit} · top category: ${top} · ${an} flagged</div>
+ <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr));align-items:start"><div><svg class="sc" viewBox="0 0 ${W} ${H}">${g}</svg><div class="sub" style="margin-top:4px"><span style="color:var(--g)">■</span> normal &nbsp; <span style="color:var(--rust)">■</span> flagged · hover a bar for details</div></div><div>${cats}</div></div>`;
+}
+function learnView(){
+ const L=S.learn;
+ if(!L||!L.n){$('#learn').innerHTML='<div class="empty">Nothing to learn from yet. Load the demo dataset or add expenses.</div>';return}
+ const ready=L.n>=30;
+ $('#learn').innerHTML=`<div class="sub" style="margin-bottom:8px">Trained on <b>${L.n}</b> transactions over <b>${L.days}</b> days <span class="chip ${ready?'ok':'m'}">${ready?'confident':'still learning'}</span><br>Norms use your last 60 days and weight recent weeks more. Purchases you approve teach it; flagged ones don't.</div>`+
+  CATS.map(c=>{const v=L.by[c],ok=v.n>=PRIOR_N;return`<div class="top" style="padding:6px 0;border-bottom:1px solid var(--bd)"><div><b>${c}</b><div class="sub">${ok?`typical ${R(v.m)} · usual range ${R(Math.max(0,v.m-v.sp))}–${R(v.m+v.sp)}`:`starting estimate ${R(v.prior)} until it sees more`}</div></div><span class="chip ${ok?'ok':'m'}">${v.n} sample${v.n===1?'':'s'}</span></div>`}).join('')+
+  `<div class="sub" style="margin-top:8px">Night-time (12am–5am) spending: ${L.nh>=20?Math.round(L.night*100)+'% of your history, so '+(L.night>=.1?'night alerts are switched off':'night purchases get flagged'):'not enough history yet, so night purchases get flagged'}.<br>Feedback so far: ${S.dis.size} approved, ${S.boost.size} baseline shifts, ${S.conf.size} confirmed leaks.</div>`;
+}
+function scatter(A0){
+ const A=A0.filter(x=>x.ts>=Date.now()-45*D);
+ if(!A.length){$('#scatter').innerHTML='<div class="empty">No transactions yet.</div>';return}
+ const W=640,H=240,l=46,r=12,t=12,b=24,x0=A.reduce((m,x)=>Math.min(m,x.ts),Infinity),x1=A.reduce((m,x)=>Math.max(m,x.ts),Date.now())+3600e3,mx=A.reduce((m,x)=>Math.max(m,x.amt),0)*1.08;
+ const X=ts=>l+(ts-x0)/(x1-x0)*(W-l-r),Y=a=>t+(1-Math.sqrt(a/mx))*(H-t-b);
+ let g='';[0,500,2000,5000,10000,20000].filter(v=>v<=mx).forEach(v=>g+=`<line x1="${l}" x2="${W-r}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--bd)"/><text x="${l-6}" y="${Y(v)+3}" text-anchor="end">${v>=1000?v/1000+'k':v}</text>`);
+ for(let i=0;i<=4;i++){const ts=x0+(x1-x0)*i/4;g+=`<text x="${X(ts)}" y="${H-6}" text-anchor="middle">${dt(ts)}</text>`}
+ A.forEach(x=>{const c=x.flag?(x.sev==='high'?'var(--rust)':'var(--am)'):'var(--g)',tip=`<title>${esc(x.desc)} · ${R(x.amt)} · ${dt(x.ts)} ${tm(x.ts)}${x.flag?' · ANOMALY: '+esc(x.r[0]):''}</title>`;
+  g+=x.flag?`<circle cx="${X(x.ts)}" cy="${Y(x.amt)}" r="8" fill="none" stroke="${c}" stroke-width="2.5">${tip}</circle><circle cx="${X(x.ts)}" cy="${Y(x.amt)}" r="2.5" fill="${c}" pointer-events="none"/>`:`<circle cx="${X(x.ts)}" cy="${Y(x.amt)}" r="4.5" fill="${c}" opacity=".55">${tip}</circle>`});
+ $('#scatter').innerHTML=`<svg class="sc" viewBox="0 0 ${W} ${H}">${g}</svg>`;
+}
+function tilesView(st){
+ $('#tiles').innerHTML=CATS.map(c=>`<button class="tile ${S.cf===c?'on':''}" data-c="${c}"><span class="sub">${c}</span><b>${R(st.cur[c])}</b><span class="sub">${st.tot?Math.round(st.cur[c]/st.tot*100):0}% of spend · tap to filter</span></button>`).join('');
+}
+function regView(){
+ const e=Object.entries(S.regs).sort((a,b)=>b[1].c-a[1].c).slice(0,40);
+ $('#reg').innerHTML=e.length?e.map(([k,v])=>`<div class="top" style="padding:6px 0;border-bottom:1px solid var(--bd)"><div><b>${esc(v.n)}</b> <span class="chip">${v.cat}</span><div class="sub">${v.c}× · usually ${R(v.m)} · ${v.man?'marked by you':'auto-detected'}</div></div><button class="btn" style="font-size:12px;padding:4px 8px" data-a="unreg" data-k="${esc(k)}">Remove</button></div>`).join(''):'<div class="empty">No regular spending yet.</div>';
+}
+function table(){
+ const q=$('#q').value.toLowerCase(),f=$('#f').value;
+ const all=(window.A||[]).filter(x=>(f==='All'||(f==='Flagged'?x.flag:x.cat===f))&&(x.desc+x.cat).toLowerCase().includes(q)),rows=all.slice(0,120);
+ $('#tb').innerHTML=rows.length?rows.map(x=>{const s=x.flag?(S.conf.has(x.id)?['Confirmed leak','h']:x.sev==='high'?['Check this','h']:['Worth a glance','m']):x.sc?['Cleared','']:['Normal','ok'];
+  return`<tr class="${x.flag&&!S.conf.has(x.id)?'fl':''}"><td>${dt(x.ts)}<div class="sub">${tm(x.ts)}</div></td><td>${esc(x.desc)}</td><td class="hide-m"><span class="chip">${x.cat}</span></td><td class="n">${R(x.amt)}</td><td><span class="chip ${s[1]}">${s[0]}</span></td></tr>`}).join(''):'<tr><td colspan="5" class="empty">No matching transactions.</td></tr>';
+ $('#tbnote').textContent=all.length>120?`Showing the latest 120 of ${all.length} matching transactions. Use search or filters to narrow down.`:'';
+}
+function addTx(desc,amt,ts,quiet){
+ const x={id:S.id++,desc,amt,ts,cat:cat(desc)};S.tx.push(x);
+ if(!quiet){render();const y=window.A.find(a=>a.id===x.id);if(y&&y.flag)toast(`🚨 <b>${esc(y.desc)}</b> (${R(y.amt)}) looks unusual: ${esc(y.r[0])}`);else toast(`${ic('check')} Added to ${x.cat}. Looks normal.`,1)}
+}
+/* deterministic pseudo-random so the demo history is the same every time */
+function rng(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+/* ~80 days of ordinary spending before the current month, so the system has history to learn from */
+function history(){
+ const r=rng(42),pick=(lo,hi)=>Math.round((lo+r()*(hi-lo))/10)*10,out=[];
+ for(let k=90;k>=9;k--){
+  const d=new Date(now0.getFullYear(),now0.getMonth(),now0.getDate()-k),dom=d.getDate(),wd=d.getDay(),at=(h,m)=>new Date(d.getFullYear(),d.getMonth(),d.getDate(),h,m).getTime();
+  if(r()<.5)out.push(['Starbucks coffee',pick(150,350),at(9,Math.floor(r()*40))]);
+  if(r()<.35)out.push(['Zomato lunch',pick(250,700),at(13,Math.floor(r()*40))]);
+  if(r()<.4)out.push(['Swiggy dinner',pick(300,800),at(20,Math.floor(r()*40))]);
+  if(r()<.45)out.push(['Uber ride',pick(150,350),at(18,Math.floor(r()*40))]);
+  if(wd===1)out.push(['Metro recharge',pick(200,400),at(8,10)]);
+  if(wd===6)out.push(['Fuel pump',pick(600,700),at(8,40)]);
+  if(r()<.17)out.push([r()<.5?'Amazon books':'Myntra shirt',pick(500,2200),at(21,Math.floor(r()*40))]);
+  if(dom===7)out.push(['Netflix subscription',649,at(10,0)]);
+  if(dom===6)out.push(['Spotify premium',119,at(9,0)]);
+  if(dom===3)out.push(['Prime membership',299,at(11,0)]);
+ }
+ return out;
+}
+function demo(){
+ S.tx=[];S.dis.clear();S.conf.clear();S.reg.clear();S.no.clear();S.boost.clear();S.id=1;
+ history().forEach(([d,a,ts])=>addTx(d,a,ts,1));
+ const d0=now0.getDate(),n=Date.now();
+ [['Starbucks coffee',280,8,9,10],['Swiggy dinner',640,8,20,15],['Uber ride',220,7,18,5],['Netflix subscription',649,7,10,0],['Netflix subscription',649,7,10,20],['Zomato lunch',780,6,13,10],['Spotify premium',119,6,9,0],['Metro recharge',300,5,8,30],['Amazon books',1450,5,21,0],['Barbeque Nation restaurant',8500,4,21,10],['Fuel pump',650,4,8,0],['Uber ride',260,3,19,0],['Myntra shirt',1799,3,12,0],['Amazon electronics gadget',14999,2,3,15],['Prime membership',299,2,11,0],['Online store',49,1,14,2],['Online store',79,1,14,8],['Online store',99,1,14,15],['Zomato dinner',520,1,21,0],['Starbucks coffee',310,0,9,0],['Uber ride',240,0,9,40]]
+ .forEach(([d,a,b,h,m],i)=>{const day=Math.max(1,d0-b),ts=new Date(now0.getFullYear(),now0.getMonth(),day,h,m).getTime();addTx(d,a,Math.min(ts,n-(30-i)*6e4),1)});
+ render();const rc=Date.now()-30*D;toast(`${ic('check')} Demo loaded: ${S.tx.length} transactions (${S.learn.days} days of history), ${window.A.filter(x=>x.flag&&x.ts>=rc).length} recent anomalies found.`,1);
+}
+
+/* ---------- CSV import (single pass, built for ~55k rows) ---------- */
+const MAX_ROWS=60000;
+function parseCSV(t){
+ t=t.replace(/^\uFEFF/,'');
+ const nl=t.search(/\r|\n/),first=nl<0?t:t.slice(0,nl),cnt=ch=>first.split(ch).length,dl=cnt(';')>cnt(',')&&cnt(';')>=cnt('\t')?59:cnt('\t')>cnt(',')?9:44;
+ const rows=[],n=t.length;let row=[],f='',q=false;
+ for(let i=0;i<n;i++){
+  const c=t.charCodeAt(i);
+  if(q){if(c===34){if(t.charCodeAt(i+1)===34){f+='"';i++}else q=false}else f+=t[i]}
+  else if(c===34)q=true;
+  else if(c===dl){row.push(f);f=''}
+  else if(c===10||c===13){if(c===13&&t.charCodeAt(i+1)===10)i++;row.push(f);f='';if(row.length>1||row[0]!=='')rows.push(row);row=[]}
+  else f+=t[i];
+ }
+ row.push(f);if(row.length>1||row[0]!=='')rows.push(row);
+ return rows;
+}
+/* dates: yyyy-mm-dd[ hh:mm] or dd/mm/yyyy[ hh:mm[ am|pm]] (day-first, Indian style). Date-only values land at 12:00 so they never look like night spending. */
+function pd(s){
+ s=String(s).trim();
+ let m=s.match(/^(\d{4})[\/.-](\d{1,2})[\/.-](\d{1,2})(?:[T\s]+(\d{1,2}):(\d{2})(?::(\d{2}))?)?/);
+ if(m)return new Date(+m[1],m[2]-1,+m[3],m[4]===undefined?12:+m[4],+(m[5]||0),+(m[6]||0)).getTime();
+ m=s.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{2,4})(?:[T,\s]+(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(am|pm)?)?/i);
+ if(m){let y=+m[3],h=m[4]===undefined?12:+m[4];if(y<100)y+=2000;if(m[7]){const p=m[7].toLowerCase();if(p==='pm'&&h<12)h+=12;if(p==='am'&&h===12)h=0}return new Date(y,m[2]-1,+m[1],h,+(m[5]||0),+(m[6]||0)).getTime()}
+ return Date.parse(s);
+}
+const pa=s=>parseFloat(String(s).replace(/[^0-9.\-]/g,''));
+function importCSV(text){
+ const rows=parseCSV(text);
+ if(rows.length<1){toast('That CSV looks empty.');return}
+ let di=0,mi=1,ai=2,ci=-1,start=0;
+ const hasHdr=!rows[0].some(c=>!isNaN(pd(c))&&/\d/.test(c));
+ if(hasHdr){
+  const h=rows[0].map(c=>c.trim().toLowerCase()),ix=re=>h.findIndex(c=>re.test(c));
+  di=ix(/date|time/);mi=ix(/desc|merchant|narrat|detail|particular|payee|name|memo/);ai=ix(/amount|amt|debit|withdraw|value|spent/);ci=ix(/categor/);
+  if(di<0||mi<0||ai<0){toast('CSV needs date, description/merchant and amount columns.');return}
+  start=1;
+ }
+ const lim=Math.min(rows.length,start+MAX_ROWS);let ok=0,bad=0;
+ for(let i=start;i<lim;i++){
+  const r=rows[i],ts=pd(r[di]||''),amt=Math.abs(pa(r[ai]||'')),desc=(r[mi]||'').trim();
+  if(!desc||!(amt>0)||isNaN(ts)){bad++;continue}
+  const c=ci>=0&&CATS.includes((r[ci]||'').trim())?r[ci].trim():cat(desc);
+  S.tx.push({id:S.id++,desc,amt,ts,cat:c});ok++;
+ }
+ const cut=rows.length-lim;
+ render(); /* one render for the whole file */
+ toast(`${ic('check')} Imported ${ok.toLocaleString('en-IN')} transactions${bad?`, skipped ${bad.toLocaleString('en-IN')} invalid rows`:''}${cut>0?`, ignored ${cut.toLocaleString('en-IN')} rows over the ${MAX_ROWS.toLocaleString('en-IN')} limit`:''}.`,ok>0);
+}
+$('#csv').onchange=e=>{
+ const file=e.target.files[0];if(!file)return;
+ toast('Importing CSV…',1);
+ const fr=new FileReader();
+ fr.onload=()=>setTimeout(()=>{try{importCSV(String(fr.result))}catch(err){console.error(err);toast('Could not read that CSV.')}},30);
+ fr.onerror=()=>toast('Could not read that file.');
+ fr.readAsText(file);
+ e.target.value=''; /* lets the same file be picked again */
+};
+
+document.addEventListener('click',e=>{
+ const s=e.target.closest('[data-s]');if(s){S.sens=s.dataset.s;render()}
+ const pb=e.target.closest('[data-p]');if(pb){S.per=pb.dataset.p;try{localStorage.setItem('spendsentry.period',S.per)}catch(_){}render()}
+ const go=e.target.closest('[data-go]');if(go&&!e.target.closest('button'))$('#'+go.dataset.go).scrollIntoView({behavior:'smooth',block:'center'});
+ const tc=e.target.closest('[data-c]');if(tc){S.cf=S.cf===tc.dataset.c?'':tc.dataset.c;$('#f').value=S.cf||'All';render();if(S.cf)$('#tb').scrollIntoView({behavior:'smooth',block:'center'})}
+ const a=e.target.closest('[data-a]');if(a){const id=+a.dataset.id,x=window.A.find(v=>v.id===id);
+  if(a.dataset.a==='ok'){S.dis.add(id);toast(`${ic('check')} Marked legitimate. It now counts toward your normal range.`,1)}
+  if(a.dataset.a==='base'){S.boost.add(id);S.dis.add(id);toast(`${ic('trend')} ${x.cat} norm will now treat ${R(x.amt)} as typical`,1)}
+  if(a.dataset.a==='leak'){S.conf.add(id);toast(`${ic('flag')} Confirmed as a leak. It won't be learned as normal.`)}
+  if(a.dataset.a==='reg'){const k=x.desc.toLowerCase();S.reg.add(k);S.no.delete(k);S.dis.add(id);toast(`${ic('repeat')} "${esc(x.desc)}" added to regular spending.`,1)}
+  if(a.dataset.a==='unreg'){S.no.add(a.dataset.k);S.reg.delete(a.dataset.k);toast('Removed from regular spending.',1)}
+  render()}
+});
+$('#sens').addEventListener('click',()=>{});
+['add1','add2'].forEach(i=>$('#'+i).onclick=openM);
+$('#add1').innerHTML=ic('plus')+' Add Expense';$('#add2').innerHTML=ic('plus');$('#demo').innerHTML=ic('spark')+' Load Demo Dataset';$('#demo').onclick=demo;
+$('#clr').onclick=()=>{if(!S.tx.length||confirm('Delete all saved transactions and everything learned from them?')){S.tx=[];S.dis.clear();S.conf.clear();S.reg.clear();S.no.clear();S.boost.clear();S.id=1;render();toast('All data cleared.',1)}};
+$('#logo').innerHTML=`<path d="${P.shield}"/>`;
+$('#f').innerHTML=['All','Flagged',...CATS].map(c=>`<option>${c}</option>`).join('');$('#f').onchange=()=>{S.cf=CATS.includes($('#f').value)?$('#f').value:'';render()};$('#q').oninput=table;
+function openM(){const z=new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,16);$('#mt').value=z;$('#ma').value='';$('#md').value='';$('#mc').textContent='General Outflow';$('#modal').classList.add('on');setTimeout(()=>$('#ma').focus(),50)}
+const closeM=()=>$('#modal').classList.remove('on');
+$('#mx').onclick=closeM;$('#modal').onclick=e=>{if(e.target.id==='modal')closeM()};
+$('#md').oninput=()=>$('#mc').textContent=cat($('#md').value);
+$('#ms').onclick=()=>{const a=parseFloat($('#ma').value),d=$('#md').value.trim(),ts=new Date($('#mt').value).getTime()||Date.now();
+ if(!(a>0)||!d){toast('Enter an amount and a description.');return}closeM();addTx(d,a,ts)};
+
+/* ---------- instant boot: no login, straight to the dashboard ---------- */
+$('#theme').onclick=()=>setTheme(!document.documentElement.classList.contains('dark'));
+setTheme(document.documentElement.classList.contains('dark')); /* sync icon with the class set in <head> */
+load();
+try{const p=localStorage.getItem('spendsentry.period');if(['Week','Month','Year'].includes(p))S.per=p}catch(e){}
+S.user='Demo User';$('#usr').textContent='👤 Demo User';
+render();
+</script></body></html>
